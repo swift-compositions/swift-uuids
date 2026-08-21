@@ -1,5 +1,3 @@
-// UUIDs Tests.swift
-
 import Testing
 
 @testable import UUIDs
@@ -11,23 +9,20 @@ extension UUIDs {
     }
 }
 
-// Test namespace for organizing UUIDs tests.
 enum UUIDs {}
-
-// MARK: - Unit Tests — v4
 
 extension UUIDs.Test.Unit {
     @Test
     func `v4() returns a UUID with version 4 bits set`() throws {
         let uuid = try RFC_4122.UUID.v4()
-        // Version 4 is encoded in the high nibble of byte 6.
+
         #expect((uuid.bytes.6 & 0xF0) == 0x40)
     }
 
     @Test
     func `v4() returns a UUID with RFC 4122 variant bits set`() throws {
         let uuid = try RFC_4122.UUID.v4()
-        // RFC 4122 variant is encoded in the high 2 bits of byte 8.
+
         #expect((uuid.bytes.8 & 0xC0) == 0x80)
     }
 
@@ -35,12 +30,10 @@ extension UUIDs.Test.Unit {
     func `v4() returns different UUIDs on successive calls`() throws {
         let first = try RFC_4122.UUID.v4()
         let second = try RFC_4122.UUID.v4()
-        // Two 122-bit random values are statistically certain to differ.
+
         #expect(first != second)
     }
 }
-
-// MARK: - Unit Tests — v7
 
 extension UUIDs.Test.Unit {
     @Test
@@ -58,7 +51,7 @@ extension UUIDs.Test.Unit {
     @Test
     func `v7(unixMilliseconds:) sets version 7 bits`() throws {
         let uuid = try RFC_9562.UUID.v7(unixMilliseconds: 0)
-        // Version 7 is encoded in the high nibble of byte 6.
+
         #expect((uuid.bytes.6 & 0xF0) == 0x70)
     }
 
@@ -70,12 +63,10 @@ extension UUIDs.Test.Unit {
 
     @Test
     func `v7(unixMilliseconds:) is monotone in the timestamp`() throws {
-        // Two UUIDs produced with monotone timestamps must order such that the
-        // earlier timestamp's UUID is lexicographically smaller in its
-        // timestamp prefix.
+
         let earlier = try RFC_9562.UUID.v7(unixMilliseconds: 1_000_000_000_000)
         let later = try RFC_9562.UUID.v7(unixMilliseconds: 1_000_000_000_001)
-        // Compare the 6-byte timestamp prefix.
+
         let earlierPrefix: [UInt8] = [
             earlier.bytes.0, earlier.bytes.1, earlier.bytes.2,
             earlier.bytes.3, earlier.bytes.4, earlier.bytes.5,
@@ -87,8 +78,6 @@ extension UUIDs.Test.Unit {
         #expect(earlierPrefix.lexicographicallyPrecedes(laterPrefix))
     }
 }
-
-// MARK: - Edge Cases
 
 extension UUIDs.Test.`Edge Case` {
     @Test
