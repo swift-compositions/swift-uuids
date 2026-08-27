@@ -32,7 +32,7 @@ Add the package to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-foundations/swift-uuids.git", branch: "main")
+    .package(url: "https://github.com/swift-compositions/swift-uuids.git", branch: "main")
 ],
 targets: [
     .target(

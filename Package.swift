@@ -20,7 +20,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-ietf/swift-rfc-4122.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-9562.git", branch: "main"),
-        .package(url: "https://github.com/swift-foundations/swift-random.git", branch: "main"),
+        .package(url: "https://github.com/swift-compositions/swift-random.git", branch: "main"),
     ],
     targets: [
         .target(
