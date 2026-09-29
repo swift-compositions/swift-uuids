@@ -18,6 +18,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-glob.git", branch: "main", traits: ["Parser"]),
         .package(url: "https://github.com/swift-ietf/swift-rfc-4122.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-9562.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-random.git", branch: "main"),
