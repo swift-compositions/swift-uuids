@@ -22,9 +22,7 @@ let package = Package(
         .package(url: "https://github.com/swift-ietf/swift-rfc-4122.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-9562.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-random.git", branch: "main"),
-        .package(url: "https://github.com/swift-compositions/swift-darwin.git", branch: "main"),
-        .package(url: "https://github.com/swift-compositions/swift-linux.git", branch: "main"),
-        .package(url: "https://github.com/swift-compositions/swift-windows.git", branch: "main"),
+        .package(url: "https://github.com/swift-compositions/swift-kernel.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -33,21 +31,7 @@ let package = Package(
                 .product(name: "RFC 4122", package: "swift-rfc-4122"),
                 .product(name: "RFC 9562", package: "swift-rfc-9562"),
                 .product(name: "Random", package: "swift-random"),
-                .product(
-                    name: "Darwin Kernel",
-                    package: "swift-darwin",
-                    condition: .when(platforms: [.macOS, .iOS, .tvOS, .watchOS, .visionOS])
-                ),
-                .product(
-                    name: "Linux Kernel",
-                    package: "swift-linux",
-                    condition: .when(platforms: [.linux])
-                ),
-                .product(
-                    name: "Windows Kernel",
-                    package: "swift-windows",
-                    condition: .when(platforms: [.windows])
-                ),
+                .product(name: "Kernel Core", package: "swift-kernel"),
             ]
         ),
         .testTarget(
