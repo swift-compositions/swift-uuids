@@ -1,51 +1,8 @@
 # swift-uuids
 
-UUIDs for Swift — RFC 4122 and RFC 9562 spec encoding bound to the platform
-CSPRNG.
+Use this package when you need to generate new UUIDs with the system's secure random number generator. Call `RFC_4122.UUID.v4()` for a random identifier, or `RFC_9562.UUID.v7(unixMilliseconds:)` for one that sorts by creation time. If you only parse, compare or format UUIDs, or bring your own randomness, use swift-rfc-4122 or swift-rfc-9562 directly.
 
-`swift-uuids` is the L3 unifier that composes `swift-rfc-4122` × `swift-rfc-9562`
-× `swift-random`. Importing the `UUIDs` module brings the canonical typed UUID
-and spec-correct v3 / v4 / v5 / v7 / v8 generators on every supported platform,
-with the platform CSPRNG automatically bound:
+## Laws
 
-- Darwin: `arc4random_buf`
-- Linux: `getrandom(2)`
-- Windows: `BCryptGenRandom`
-
-## Quick Start
-
-```swift
-import UUIDs
-
-// Version 4 (random) — 122 bits from the platform CSPRNG.
-let id = try RFC_4122.UUID.v4()
-
-// Version 7 (Unix-ms timestamp + random) — time-ordered, recommended for new
-// applications per RFC 9562 §5.7.
-let now: Int64 = 1_645_557_742_000
-let key = try RFC_9562.UUID.v7(unixMilliseconds: now)
-```
-
-## Installation
-
-Add the package to your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/swift-compositions/swift-uuids.git", branch: "main")
-],
-targets: [
-    .target(
-        name: "MyTarget",
-        dependencies: [
-            .product(name: "UUIDs", package: "swift-uuids")
-        ]
-    )
-]
-```
-
-> Pre-1.0: no version tags yet. APIs may change; pin a commit for reproducible builds.
-
-## License
-
-Apache License 2.0. See [LICENSE.md](LICENSE.md).
+- Random bits come only from the system generator. If it fails, generation throws. There is no weaker fallback.
+- `RFC_9562.UUID.v7(unixMilliseconds:)` writes the timestamp big-endian into the first six bytes, so UUIDs from a later millisecond sort after those from an earlier one. The remaining bits are random, so two UUIDs made in the same millisecond have no defined order.
