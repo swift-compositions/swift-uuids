@@ -37,7 +37,7 @@ let package = Package(
         .testTarget(
             name: "UUIDs Tests",
             dependencies: [
-                "UUIDs"
+                .target(name: "UUIDs")
             ]
         ),
     ],
