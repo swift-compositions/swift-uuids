@@ -37,9 +37,9 @@ extension UUIDs.Test.Unit {
 
 extension UUIDs.Test.Unit {
     @Test
-    func `v7(unixMilliseconds:) encodes the timestamp in big-endian bytes 0-5`() throws {
+    func `v7(at:) encodes the timestamp in big-endian bytes 0-5`() throws {
         let timestamp: Int64 = 0x0123_4567_89AB
-        let uuid = try RFC_9562.UUID.v7(unixMilliseconds: timestamp)
+        let uuid = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: timestamp))
         #expect(uuid.bytes.0 == 0x01)
         #expect(uuid.bytes.1 == 0x23)
         #expect(uuid.bytes.2 == 0x45)
@@ -49,23 +49,23 @@ extension UUIDs.Test.Unit {
     }
 
     @Test
-    func `v7(unixMilliseconds:) sets version 7 bits`() throws {
-        let uuid = try RFC_9562.UUID.v7(unixMilliseconds: 0)
+    func `v7(at:) sets version 7 bits`() throws {
+        let uuid = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: 0))
 
         #expect((uuid.bytes.6 & 0xF0) == 0x70)
     }
 
     @Test
-    func `v7(unixMilliseconds:) sets RFC 4122 variant bits`() throws {
-        let uuid = try RFC_9562.UUID.v7(unixMilliseconds: 0)
+    func `v7(at:) sets RFC 4122 variant bits`() throws {
+        let uuid = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: 0))
         #expect((uuid.bytes.8 & 0xC0) == 0x80)
     }
 
     @Test
-    func `v7(unixMilliseconds:) is monotone in the timestamp`() throws {
+    func `v7(at:) is monotone in the timestamp`() throws {
 
-        let earlier = try RFC_9562.UUID.v7(unixMilliseconds: 1_000_000_000_000)
-        let later = try RFC_9562.UUID.v7(unixMilliseconds: 1_000_000_000_001)
+        let earlier = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: 1_000_000_000_000))
+        let later = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: 1_000_000_000_001))
 
         let earlierPrefix: [UInt8] = [
             earlier.bytes.0, earlier.bytes.1, earlier.bytes.2,
@@ -81,9 +81,9 @@ extension UUIDs.Test.Unit {
 
 extension UUIDs.Test.`Edge Case` {
     @Test
-    func `v7(unixMilliseconds:) accepts the 48-bit maximum`() throws {
+    func `v7(at:) accepts the 48-bit maximum`() throws {
         let max48: Int64 = 0xFFFF_FFFF_FFFF
-        let uuid = try RFC_9562.UUID.v7(unixMilliseconds: max48)
+        let uuid = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: max48))
         #expect(uuid.bytes.0 == 0xFF)
         #expect(uuid.bytes.5 == 0xFF)
     }
@@ -91,7 +91,17 @@ extension UUIDs.Test.`Edge Case` {
     @Test
     func `v4() and v7() produce distinguishable versions`() throws {
         let four = try RFC_4122.UUID.v4()
-        let seven = try RFC_9562.UUID.v7(unixMilliseconds: 0)
+        let seven = try RFC_9562.UUID.v7(at: RFC_9562.Timestamp(unixMilliseconds: 0))
         #expect((four.bytes.6 & 0xF0) != (seven.bytes.6 & 0xF0))
+    }
+
+    @Test
+    func `a timestamp outside 48 bits is refused before v7(at:) can trap`() {
+        #expect(throws: RFC_9562.Timestamp.Error.outOfRange) {
+            try RFC_9562.Timestamp(unixMilliseconds: -1)
+        }
+        #expect(throws: RFC_9562.Timestamp.Error.outOfRange) {
+            try RFC_9562.Timestamp(unixMilliseconds: 0x1_0000_0000_0000)
+        }
     }
 }
